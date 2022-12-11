@@ -22,7 +22,6 @@ e.g. ffhq512
 converted model:
 * FFHQ 512 checkpoints/comod-ffhq-512/co-mod-gan-ffhq-9-025000_net_G_ema.pth
 * FFHQ 1024 checkpoints/comod-ffhq-1024/co-mod-gan-ffhq-10-025000_net_G_ema.pth
-* Places 512 checkpoints/comod-places-512/co-mod-gan-places2-050000_net_G_ema.pth
 
 2. use the following command as a minimal example of usage
 
