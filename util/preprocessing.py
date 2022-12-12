@@ -3,7 +3,6 @@ import numpy as np
 import scipy.ndimage
 import PIL.Image
 
-import face_alignment
 import mediapipe as mp
 import cv2
 
@@ -93,7 +92,7 @@ def image_align(src_file, dst_file, face_landmarks, output_size=256, transform_s
 
 
 def folders_image_align(src, dst):
-
+    
     output_size = 512
     transform_size = 512
     no_padding = False
@@ -101,20 +100,18 @@ def folders_image_align(src, dst):
     if not os.path.exists(dst):
         os.mkdir(dst)
 
-    landmarks_detector = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, flip_input=False, device='cpu')
-
     for img_name in os.listdir(src):
         raw_img_path = os.path.join(src, img_name)
-
-        for i, face_landmarks in enumerate(landmarks_detector.get_landmarks(raw_img_path), start=1):
-
-            aligned_face_path = os.path.join(dst, f'align-{img_name}')
-
-            image_align(raw_img_path, aligned_face_path, face_landmarks, output_size, transform_size, no_padding)
+        
+        face_landmarks = mask_landmark_extract(raw_img_path, True)
+        aligned_face_path = os.path.join(dst, f'align-{img_name}')
+        
+        image_align(raw_img_path, aligned_face_path, face_landmarks, output_size, transform_size, no_padding)
             
-def mask_landmark_extract(src):
+def mask_landmark_extract(src, align=False):
     
     mask_location = []
+    dlib_68_location = []
 
     with mp.solutions.face_mesh.FaceMesh(
         max_num_faces=1,
@@ -134,18 +131,30 @@ def mask_landmark_extract(src):
         results = face_mesh.process(image)
         
         mask_landmark = [
-            137, 177, 215, 138, 135, 169, 170, 140, 171, 175, 396, 369, 395, 394, 367, 435, 401, 366, 197
+            234, 93, 132, 58, 172, 136,150, 140, 176, 148, 152, 377, 
+            400, 378, 379, 365, 397, 288, 361, 323, 454, 197
         ]
+        landmark_points_68 = [162,234,93,58,172,136,149,148,152,377,378,365,397,288,323,454,389,71,63,105,66,107,336,
+                  296,334,293,301,168,197,5,4,75,97,2,326,305,33,160,158,133,153,144,362,385,387,263,373,
+                  380,61,39,37,0,267,269,291,405,314,17,84,181,78,82,13,312,308,317,14,87]
+
 
         loc_x, loc_y = "", ""
         
         if results.multi_face_landmarks:
             for face_landmarks in results.multi_face_landmarks: 
-                for idx in mask_landmark:
-                    loc_x = face_landmarks.landmark[idx].x * image.shape[1]
-                    loc_y = face_landmarks.landmark[idx].y * image.shape[0]
-                    mask_location.append((loc_x, loc_y))
-
+                if align:
+                    for idx in landmark_points_68:
+                        loc_x = face_landmarks.landmark[idx].x * image.shape[1]
+                        loc_y = face_landmarks.landmark[idx].y * image.shape[0]
+                        dlib_68_location.append((loc_x, loc_y))
+                else:
+                    for idx in mask_landmark:
+                        loc_x = face_landmarks.landmark[idx].x * image.shape[1]
+                        loc_y = face_landmarks.landmark[idx].y * image.shape[0]
+                        mask_location.append((loc_x, loc_y))
+        if align:
+            return dlib_68_location
         return mask_location
 
 def mask_image_generate(src, dst):
@@ -158,7 +167,7 @@ def mask_image_generate(src, dst):
         src_img_path = os.path.join(src, img_name)
         dst_img_path = os.path.join(dst, img_name)
     
-        landmark_points = landmark(src_img_path)
+        landmark_points = mask_landmark_extract(src_img_path)
         points = np.array(landmark_points, np.int32)
 
         mask = np.zeros((512,512,3), dtype=np.int32)
