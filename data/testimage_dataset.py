@@ -55,20 +55,14 @@ class TestImageDataset(BaseDataset):
         folders_image_align(opt.raw_image_dir, opt.image_dir)
         mask_image_generate(opt.image_dir, opt.mask_dir)
         
-        img_names = os.listdir(opt.image_dir)
-        msk_names = os.listdir(opt.mask_dir)
+        img_names = [file for file in os.listdir(opt.image_dir) 
+                     if file.endswith(".png") or file.endswith(".jpg") or file.endswith(".jpeg")]
+        msk_names = [file for file in os.listdir(opt.mask_dir) 
+                     if file.endswith(".png") or file.endswith(".jpg") or file.endswith(".jpeg")]
         img_names.sort()
         msk_names.sort()
         
 
-        # img_postfix = img_names[0].split(".")[-1]
-        # if opt.list_dir is not None:
-        #     with open(opt.list_dir, "r") as f:
-        #         msk_names = f.readlines()
-        #     msk_names = [n.strip("\n") for n in msk_names]
-        # else:
-        #     msk_names = os.listdir(opt.mask_dir)
-        # img_names = [n.replace("png", img_postfix) for n in msk_names]
         image_paths = [f"{opt.image_dir}/{n}" for n in img_names]
         output_paths = [f"{opt.output_dir}/{n}" for n in img_names]
         mask_paths = [f"{opt.mask_dir}/{n}" for n in msk_names]
