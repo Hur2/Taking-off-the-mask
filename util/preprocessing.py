@@ -78,7 +78,7 @@ def image_align(src_file, dst_file, face_landmarks, output_size=256, transform_s
             quad += pad[:2]
 
         # Transform.
-        img = img.transform((transform_size, transform_size), PIL.Image.Transform.QUAD, (quad + 0.5).flatten(), PIL.Image.Resampling.BILINEAR)
+        img = img.transform((transform_size, transform_size), PIL.Image.QUAD, (quad + 0.5).flatten(), PIL.Image.BILINEAR)
         if output_size < transform_size:
             img = img.resize((output_size, output_size), PIL.Image.ANTIALIAS)
         
@@ -131,8 +131,8 @@ def mask_landmark_extract(src, align=False):
         results = face_mesh.process(image)
         
         mask_landmark = [
-            234, 93, 132, 58, 172, 136,150, 140, 176, 148, 152, 377, 
-            400, 378, 379, 365, 397, 288, 361, 323, 454, 197
+            127, 234, 93, 132, 58, 172, 136,150, 176, 148, 152, 377, 
+            400, 378, 379, 365, 397, 288, 361, 323, 454, 356, 168
         ]
         landmark_points_68 = [162,234,93,58,172,136,149,148,152,377,378,365,397,288,323,454,389,71,63,105,66,107,336,
                   296,334,293,301,168,197,5,4,75,97,2,326,305,33,160,158,133,153,144,362,385,387,263,373,
@@ -152,7 +152,7 @@ def mask_landmark_extract(src, align=False):
                     for idx in mask_landmark:
                         loc_x = face_landmarks.landmark[idx].x * image.shape[1]
                         loc_y = face_landmarks.landmark[idx].y * image.shape[0]
-                        mask_location.append((loc_x, loc_y))
+                        mask_location.append((loc_x, loc_y+25))
         if align:
             return dlib_68_location
         return mask_location
