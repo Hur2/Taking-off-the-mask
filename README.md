@@ -4,7 +4,7 @@
 ### requirments
 ```
 conda install pytorch torchvision cudatoolkit=11 -c pytorch
-conda install matplotlib jinja2 ninja dill
+conda install matplotlib jinja2 ninja dill mediapipe
 pip install git+https://github.com/zengxianyu/pytorch-fid
 ```
 
