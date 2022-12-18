@@ -1,11 +1,13 @@
 
 ## Usage
 
-### requirments
+### result sample
+Input image<img src="images/input.png" width=200> Mask<img src="images/mask.png" width=200>  Result<img src="images/output.png" width=200> 
+
+### requirements
 ```
 conda install pytorch torchvision cudatoolkit=11 -c pytorch
 conda install matplotlib jinja2 ninja dill mediapipe
-pip install git+https://github.com/zengxianyu/pytorch-fid
 ```
 
 
